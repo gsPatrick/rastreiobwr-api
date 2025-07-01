@@ -8,12 +8,26 @@ let qrCodeGerado = false; // Flag para garantir que o QR seja gerado apenas uma 
 const iniciarClienteWhatsApp = () => {
     client = new Client({
         authStrategy: new LocalAuth(),
+        // ADICIONE ESTA SEÇÃO INTEIRA
+        puppeteer: {
+            headless: true, // Garante que está em modo sem interface gráfica
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process', // Ajuda em ambientes com poucos recursos
+                '--disable-gpu'
+            ],
+        }
     });
 
     client.on('qr', (qr) => {
-        if (!qrCodeGerado) { // Só gera o QR Code uma vez
-            qrCodeData = qr; // Armazena o QR Code
-            qrCodeGerado = true; // Marca como gerado
+        if (!qrCodeGerado) {
+            qrCodeData = qr;
+            qrCodeGerado = true;
             console.log('QR Code gerado. Escaneie o código QR no WhatsApp.');
         }
     });
@@ -24,7 +38,7 @@ const iniciarClienteWhatsApp = () => {
 
     client.on('auth_failure', () => {
         console.log('Falha na autenticação.');
-        qrCodeGerado = false; // Caso a autenticação falhe, permitir gerar um novo QR Code
+        qrCodeGerado = false;
     });
 
     client.initialize();
