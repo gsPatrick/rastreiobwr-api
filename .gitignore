@@ -1,2 +1,7 @@
 node_modules/
 infra/
+
+src/services/output/
+
+# Ignorar arquivos de credenciais
+credentials.json

@@ -1,9 +1,9 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('bwrBombasPlanilha', 'root', '#Bwrbombas24', {
-    host: 'localhost',
-    dialect: 'mariadb',
-    port: 3306,
+const sequelize = new Sequelize('rastreioapi', 'rastreioapi', 'rastreioapi', {
+    host: 'n8n_rastreioapi',
+    dialect: 'postgres',
+    port: 5432,
     logging: false
 });
 
