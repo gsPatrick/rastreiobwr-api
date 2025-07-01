@@ -1,3 +1,5 @@
+// src/services/AuthService.js
+
 const { Client, LocalAuth } = require('whatsapp-web.js');
 
 let client;
@@ -6,11 +8,23 @@ let qrCodeGerado = false; // Flag para garantir que o QR seja gerado apenas uma 
 
 // Função para inicializar o cliente do WhatsApp
 const iniciarClienteWhatsApp = () => {
+    // ---> INÍCIO DA MUDANÇA <---
+    // Apenas inicia o WhatsApp se a variável de ambiente estiver definida como 'true'
+    if (process.env.WHATSAPP_ENABLED !== 'true') {
+        console.log('----------------------------------------------------');
+        console.log('WhatsApp está DESATIVADO via variável de ambiente.');
+        console.log('Nenhuma tentativa de conexão será feita.');
+        console.log('----------------------------------------------------');
+        return; // Sai da função e não faz mais nada
+    }
+    // ---> FIM DA MUDANÇA <---
+
+    console.log('WhatsApp está ATIVADO. Tentando inicializar o cliente...');
+
     client = new Client({
         authStrategy: new LocalAuth(),
-        // ADICIONE ESTA SEÇÃO INTEIRA
         puppeteer: {
-            headless: true, // Garante que está em modo sem interface gráfica
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -18,16 +32,16 @@ const iniciarClienteWhatsApp = () => {
                 '--disable-accelerated-2d-canvas',
                 '--no-first-run',
                 '--no-zygote',
-                '--single-process', // Ajuda em ambientes com poucos recursos
+                '--single-process',
                 '--disable-gpu'
             ],
         }
     });
 
     client.on('qr', (qr) => {
-        if (!qrCodeGerado) {
-            qrCodeData = qr;
-            qrCodeGerado = true;
+        if (!qrCodeGerado) { // Só gera o QR Code uma vez
+            qrCodeData = qr; // Armazena o QR Code
+            qrCodeGerado = true; // Marca como gerado
             console.log('QR Code gerado. Escaneie o código QR no WhatsApp.');
         }
     });
@@ -38,7 +52,7 @@ const iniciarClienteWhatsApp = () => {
 
     client.on('auth_failure', () => {
         console.log('Falha na autenticação.');
-        qrCodeGerado = false;
+        qrCodeGerado = false; // Caso a autenticação falhe, permitir gerar um novo QR Code
     });
 
     client.initialize();

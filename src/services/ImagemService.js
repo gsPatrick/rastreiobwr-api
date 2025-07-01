@@ -62,14 +62,11 @@ const formatarNumeroTelefone = (numero) => {
 // Função para mandar a imagem via WhatsApp após gerar || Ela é executada atravez da função validacao 
 const mandarMensagem = async (pedidos) => {
     try {
-        if (!Array.isArray(pedidos)) {
-            throw new TypeError('A variável pedidos deve ser um array.');
-        }
-
         const client = getClient();
-
-        if (!client.info || !client.info.wid) {
-            console.log('O cliente WhatsApp ainda não está pronto.');
+        // ---> INÍCIO DA MUDANÇA <---
+        // Se o cliente não foi inicializado (porque o WhatsApp está desativado), apenas registre e saia.
+        if (!client) {
+            console.log('Cliente WhatsApp não inicializado. Nenhuma mensagem será enviada.');
             return;
         }
 
