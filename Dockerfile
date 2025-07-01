@@ -22,7 +22,7 @@ ARG CACHEBUST=2
 COPY package*.json ./
 
 # Instale as dependências do Node.js.
-RUN npm install --omit=dev 
+RUN npm install 
 
 # Copie o resto do código da sua API para o contêiner.
 COPY . .
